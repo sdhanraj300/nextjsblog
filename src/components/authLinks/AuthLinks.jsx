@@ -1,7 +1,9 @@
-import React from "react";
-import Link from "next/link"
+"use client"
+import React, { useState } from "react";
+import Link from "next/link";
 import styles from "./authLinks.module.css";
 const AuthLinks = () => {
+  const [open, setOpen] = useState(false);
   const status = "notauthenticated";
   return (
     <>
@@ -13,6 +15,11 @@ const AuthLinks = () => {
           <span className={styles.link}>Logout</span>
         </>
       )}
+      <div className={styles.burger}>
+        <div className={styles.line}></div>
+        <div className={styles.line}></div>
+        <div className={styles.line}></div>
+      </div>
     </>
   );
 };
