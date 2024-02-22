@@ -4,7 +4,17 @@ import ReactQuill from "react-quill";
 import styles from "./writePage.module.css";
 import Image from "next/image";
 import "react-quill/dist/quill.bubble.css";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 const WritePage = () => {
+  const router = useRouter();
+  const { status } = useSession();
+  if (status === "loading") {
+    return <div className={styles.loading}>Loading...</div>;
+  }
+  if (status === "authenticated") {
+    router.push("/");
+  }
   const [open, setOpen] = useState(false);
   const [value, setvalue] = useState("");
   return (
