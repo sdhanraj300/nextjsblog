@@ -3,8 +3,24 @@ import styles from "./singlePage.module.css";
 import Image from "next/image";
 import Comments from "@/components/comments/Comments";
 
-const SinglePage = async ({}) => {
-  const data = [];
+const getData = async (slug) => {
+  const res = await fetch(
+    `http://localhost:3000/api/posts/${slug}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed");
+  }
+
+  return res.json();
+};
+
+const SinglePage = async ({ params }) => {
+  const { slug } = params;
+  const data = await getData(slug);
   return (
     <div className={styles.container}>
       <div className={styles.infoContainer}>
@@ -22,7 +38,7 @@ const SinglePage = async ({}) => {
               </div>
             )}
             <div className={styles.userTextContainer}>
-              <span className={styles.username}>{}</span>
+              <span className={styles.username}>{data?.user.name}</span>
               <span className={styles.date}>01.01.2024</span>
             </div>
           </div>
@@ -35,11 +51,9 @@ const SinglePage = async ({}) => {
       </div>
       <div className={styles.content}>
         <div className={styles.post}>
-          <div
-            className={styles.description}
-          />
+          <div className={styles.description} dangerouslySetInnerHTML={{__html:data?.desc}}/>
           <div className={styles.comment}>
-            <Comments />
+            <Comments postSlug={slug}/>
           </div>
         </div>
         <Menu />

@@ -6,24 +6,23 @@ const Card = ({ key, item }) => {
   return (
     <div className={styles.container} key={key}>
       <div className={styles.post}>
-        <div className={styles.imageContainer}>
-          <Image src="/p1.jpeg" alt="" fill className={styles.image} />
-        </div>
+        {item.img && (
+          <div className={styles.imageContainer}>
+            <Image src={item.img} alt="" fill className={styles.image} />
+          </div>
+        )}
         <div className={styles.textContainer}>
           <div className={styles.detail}>
-            <span className={styles.date}>11.02.2023 -</span>
-            <span className={styles.category}>Culture</span>
+            <span className={styles.date}>
+              {item.createdAt.substring(0, 10)} -
+            </span>
+            <span className={styles.category}>{item.catSlug}</span>
           </div>
-          <Link href="/">
+          <Link href={`/posts/${item.slug}`}>
             <h1>I{item.title}</h1>
           </Link>
-          <p className={styles.desc}>
-            Mollit magna exercitation elit qui consequat cupidatat id labore
-            sint. Id eu do irure consequat cillum est minim mollit pariatur
-            pariatur laboris cillum. Dolore laborum nostrud et do incididunt
-            officia exercitation nulla aliqua. Dolor magna ipsum est dolore.
-          </p>
-          <Link className={styles.link} href="/">
+          <p className={styles.desc}>{item.desc.substring(0, 60)}</p>
+          <Link className={styles.link} href={`/posts/${item.slug}`}>
             Read More
           </Link>
         </div>
