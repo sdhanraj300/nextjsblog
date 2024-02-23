@@ -1,51 +1,33 @@
 "use client";
+
+import Image from "next/image";
+import styles from "./writePage.module.css";
+import { useEffect, useState } from "react";
+import "react-quill/dist/quill.bubble.css";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import React, { useState } from "react";
-import { app } from "../../utils/firebase";
+import { app } from "@/utils/firebase";
 import ReactQuill from "react-quill";
-import styles from "./writePage.module.css";
-import Image from "next/image";
-import "react-quill/dist/quill.bubble.css";
-import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react/cjs/react.production.min";
+
 const WritePage = () => {
-  const router = useRouter();
   const { status } = useSession();
-  if (status === "loading") {
-    return <div className={styles.loading}>Loading...</div>;
-  }
-  if (status === "unauthenticated") {
-    router.push("/");
-  }
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [media, setMedia] = useState("");
-  const [open, setOpen] = useState(false);
-  const [value, setvalue] = useState("");
+  const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
+  const [catSlug, setCatSlug] = useState("");
 
-  const slugify = (str) => {
-    str.toLowerCase().trim().replace;
-  };
-  const handleSubmit = async () => {
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      body: JSON.stringify({
-        title,
-        desc: value,
-        img: media,
-        slug: slugify(title),
-      }),
-    });
-  };
-
-  const storage = getStorage(app);
   useEffect(() => {
+    const storage = getStorage(app);
     const upload = () => {
       const name = new Date().getTime() + file.name;
       const storageRef = ref(storage, name);
@@ -67,9 +49,7 @@ const WritePage = () => {
               break;
           }
         },
-        (error) => {
-          // Handle unsuccessful uploads
-        },
+        (error) => {},
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setMedia(downloadURL);
@@ -77,8 +57,43 @@ const WritePage = () => {
         }
       );
     };
-    file && upload;
+
+    file && upload();
   }, [file]);
+
+  if (status === "loading") {
+    return <div className={styles.loading}>Loading...</div>;
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+  }
+
+  const slugify = (str) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const handleSubmit = async () => {
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+        desc: value,
+        img: media,
+        slug: slugify(title),
+        catSlug: catSlug || "style", //If not selected, choose the general category
+      }),
+    });
+
+    if (res.status === 200) {
+      const data = await res.json();
+      router.push(`/posts/${data.slug}`);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -88,6 +103,14 @@ const WritePage = () => {
         className={styles.input}
         onChange={(e) => setTitle(e.target.value)}
       />
+      <select className={styles.select} onChange={(e) => setCatSlug(e.target.value)}>
+        <option value="style">style</option>
+        <option value="fashion">fashion</option>
+        <option value="food">food</option>
+        <option value="culture">culture</option>
+        <option value="travel">travel</option>
+        <option value="coding">coding</option>
+      </select>
       <div className={styles.editor}>
         <button className={styles.button} onClick={() => setOpen(!open)}>
           <Image src="/plus.png" alt="" width={16} height={16} />
@@ -114,11 +137,11 @@ const WritePage = () => {
           </div>
         )}
         <ReactQuill
+          className={styles.textArea}
           theme="bubble"
           value={value}
-          onChange={setvalue}
-          placeholder="Tell Your Story.."
-          className={styles.textArea}
+          onChange={setValue}
+          placeholder="Tell your story..."
         />
       </div>
       <button className={styles.publish} onClick={handleSubmit}>

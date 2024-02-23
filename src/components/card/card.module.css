@@ -48,9 +48,3 @@
     display: none;
   }
 }
-
-.post {
-  gap: 80px;
-  display: flex;
-  flex-direction: row;
-}

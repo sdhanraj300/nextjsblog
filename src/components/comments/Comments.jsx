@@ -1,28 +1,35 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import styles from "./comments.module.css";
 import Image from "next/image";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
+
   const data = await res.json();
+
   if (!res.ok) {
     const error = new Error(data.message);
     throw error;
   }
+
+  return data;
 };
+
 const Comments = ({ postSlug }) => {
-  const status = useSession();
+  const { status } = useSession();
+
   const { data, mutate, isLoading } = useSWR(
     `http://localhost:3000/api/comments?postSlug=${postSlug}`,
     fetcher
   );
 
   const [desc, setDesc] = useState("");
+
   const handleSubmit = async () => {
     await fetch("/api/comments", {
       method: "POST",
@@ -30,6 +37,7 @@ const Comments = ({ postSlug }) => {
     });
     mutate();
   };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Comments</h1>

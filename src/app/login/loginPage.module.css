@@ -4,14 +4,16 @@
   justify-content: center;
   margin-top: 60px;
 }
+
 .wrapper {
-  background-color: var(---softBg);
+  background-color: var(--softBg);
   padding: 150px 200px;
   display: flex;
   flex-direction: column;
   gap: 50px;
   border-radius: 10px;
 }
+
 .socialButton {
   padding: 20px;
   border-radius: 5px;
@@ -27,9 +29,11 @@
 .socialButton:first-child {
   background-color: #ff5555;
 }
+
 .socialButton:nth-child(2) {
   background-color: #111;
 }
+
 .socialButton:nth-child(3) {
   background-color: #087bea;
 }
@@ -43,7 +47,8 @@
   .wrapper {
     padding: 30px;
   }
-  .socialButton {
+
+  .socialButton{
     font-weight: 400;
     font-size: 14px;
   }
